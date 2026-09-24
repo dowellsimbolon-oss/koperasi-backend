@@ -1,5 +1,5 @@
 // Configuration URL Domain Backend Vercel
-const API_BASE_URL = 'https://koperasi-karyawan-ivia.vercel.app'; 
+const API_BASE_URL = 'https://koperasi-backend-4u4eciliq-frans-dowell.vercel.app'; // Ganti dengan URL Vercel Anda 
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm') || document.querySelector('form');
