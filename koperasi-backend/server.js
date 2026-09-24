@@ -202,3 +202,5 @@ app.put('/api/user/profile', authenticateToken, (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server Back-End Koperasi berjalan di: http://localhost:${PORT}`);
 });
+// Tambahkan/pastikan baris ini ada di paling bawah server.js
+module.exports = app;
