@@ -1,4 +1,4 @@
-// Pastikan URL menggunakan Domain Production Vercel Anda (TANPA tanda '/' di paling akhir)
+// Configuration URL Domain Backend Vercel
 const API_BASE_URL = 'https://koperasi-karyawan-ivia.vercel.app'; 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,12 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
 async function handleLogin(event) {
     event.preventDefault();
 
-    // Mengambil nilai dari field input
+    // 1. Ambil elemen input NIK & Password
     const nikInput = document.getElementById('nik') || document.getElementById('username');
     const passwordInput = document.getElementById('password');
 
     if (!nikInput || !passwordInput) {
-        alert('Elemen form input NIK/Password tidak ditemukan!');
+        alert('Elemen form input NIK atau Password tidak ditemukan!');
         return;
     }
 
@@ -29,7 +29,7 @@ async function handleLogin(event) {
     }
 
     try {
-        // Pemanggilan fetch ke endpoint Back-End Vercel (/api/auth/login)
+        // 2. Variabel response terdefinisi dengan benar menggunakan 'const'
         const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
@@ -38,23 +38,24 @@ async function handleLogin(event) {
             body: JSON.stringify({ nik, password })
         });
 
-        const data = await response.json();
+        // 3. Konversi response ke JSON
+        const result = await response.json();
 
-        if (response.ok) {
+        // 4. Cek keberhasilan HTTP Status dan field success/token
+        if (response.ok && (result.success || result.token)) {
             alert('Login Berhasil!');
-            
-            // Simpan token atau session jika dikembalikan oleh server
-            if (data.token) {
-                localStorage.setItem('token', data.token);
+
+            if (result.token) {
+                localStorage.setItem('token', result.token);
             }
-            if (data.user) {
-                localStorage.setItem('user', JSON.stringify(data.user));
+            if (result.user) {
+                localStorage.setItem('user', JSON.stringify(result.user));
             }
 
-            // Redirect ke halaman dashboard jika ada
+            // Arahkan ke halaman utama/dashboard jika ada
             // window.location.href = 'dashboard.html';
         } else {
-            alert(data.message || 'Login gagal! Periksa kembali NIK dan password Anda.');
+            alert(result.message || 'Login gagal! Periksa NIK dan Password Anda.');
         }
     } catch (error) {
         console.error('Error login:', error);
