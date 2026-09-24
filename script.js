@@ -1,27 +1,19 @@
-// Configuration URL Domain Backend Vercel
-const API_BASE_URL = 'https://koperasi-backend-4u4eciliq-frans-dowell.vercel.app'; // Ganti dengan URL Vercel Anda 
+// Otomatis gunakan localhost jika di-run lewat Live Server, atau gunakan URL Vercel jika online
+const VERCEL_URL = 'https://koperasi-backend-1ekcnrbxy-frans-dowell.vercel.app/'; // Ganti dengan URL Vercel Anda
 
-document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('loginForm') || document.querySelector('form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
-});
+const API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+    ? 'http://localhost:5000'
+    : VERCEL_URL;
 
 async function handleLogin(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
 
-    // 1. Ambil elemen input NIK & Password
-    const nikInput = document.getElementById('nik') || document.getElementById('username');
-    const passwordInput = document.getElementById('password');
+    // Mengambil input NIK dan Password
+    const nikInput = document.querySelector('input[type="text"]') || document.getElementById('username');
+    const passwordInput = document.querySelector('input[type="password"]') || document.getElementById('password');
 
-    if (!nikInput || !passwordInput) {
-        alert('Elemen form input NIK atau Password tidak ditemukan!');
-        return;
-    }
-
-    const nik = nikInput.value.trim();
-    const password = passwordInput.value.trim();
+    const nik = nikInput ? nikInput.value.trim() : '';
+    const password = passwordInput ? passwordInput.value.trim() : '';
 
     if (!nik || !password) {
         alert('NIK / Nomor Anggota dan Password wajib diisi!');
@@ -29,7 +21,6 @@ async function handleLogin(event) {
     }
 
     try {
-        // 2. Variabel response terdefinisi dengan benar menggunakan 'const'
         const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
@@ -38,27 +29,16 @@ async function handleLogin(event) {
             body: JSON.stringify({ nik, password })
         });
 
-        // 3. Konversi response ke JSON
         const result = await response.json();
 
-        // 4. Cek keberhasilan HTTP Status dan field success/token
-        if (response.ok && (result.success || result.token)) {
-            alert('Login Berhasil!');
-
-            if (result.token) {
-                localStorage.setItem('token', result.token);
-            }
-            if (result.user) {
-                localStorage.setItem('user', JSON.stringify(result.user));
-            }
-
-            // Arahkan ke halaman utama/dashboard jika ada
-            // window.location.href = 'dashboard.html';
+        if (response.ok && result.success) {
+            alert('Login Berhasil! Selamat Datang, ' + (result.user.nama || nik));
+            // window.location.href = 'dashboard.html'; // Jika ada halaman dashboard
         } else {
-            alert(result.message || 'Login gagal! Periksa NIK dan Password Anda.');
+            alert(result.message || 'Login gagal, periksa NIK dan Password!');
         }
     } catch (error) {
-        console.error('Error login:', error);
-        alert('Gagal terhubung ke server Back-End.');
+        console.error('Error Login:', error);
+        alert('Gagal terhubung ke server Back-End. Pastikan Node.js berjalan di port 5000!');
     }
 }
